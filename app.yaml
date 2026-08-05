@@ -1,0 +1,11 @@
+command:
+  - streamlit
+  - run
+  - app.py
+  - --server.port=8000
+
+env:
+  - name: LAKEBASE_SECRET_SCOPE
+    value: "database"
+  - name: LAKEBASE_SECRET_KEY
+    value: "lakebase-url"

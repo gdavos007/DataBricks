@@ -1,0 +1,18 @@
+# Weather RAG App Dependencies
+
+# Flask web framework
+flask>=3.0.0
+
+# Database connectivity
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.0
+
+# Databricks SDK for secrets management
+databricks-sdk>=0.20.0
+
+# HTTP requests for NWS API
+requests>=2.31.0
+
+# Embeddings and ML
+sentence-transformers>=2.2.0
+torch>=2.0.0

@@ -5,14 +5,14 @@ A Flask-based application that fetches weather data from the National Weather Se
 ## Architecture
 
 ```
-NWS API → weather_client.py → Flask App → Lakebase Postgres
-                                              ↓
+NWS API 1 weather_client.py 1 Flask App 1 Lakebase Postgres
+                                              1
                                       weather_documents
-                                              ↓
+                                              1
                               ingest_weather_embeddings.py
-                                              ↓
+                                              1
                                       weather_embeddings (pgvector)
-                                              ↓
+                                              1
                                     /weather/search (RAG)
 ```
 
@@ -75,7 +75,7 @@ python setup_secrets.py
 
 This creates a Databricks secret scope `weather-db` and stores your Lakebase URL securely.
 
-**Option B: Manual setup**
+**Option B: Manual setup (DO NOT commit credentials to the repo)**
 ```python
 from databricks.sdk import WorkspaceClient
 import base64
@@ -85,8 +85,9 @@ w = WorkspaceClient()
 # Create scope
 w.secrets.create_scope(scope="weather-db")
 
-# Store connection URL (base64-encoded)
-url = "postgresql://student:npg_1igvhNWJru9y@ep-super-flower-d86lslmj.database.us-east-2.cloud.databricks.com/databricks_postgres?sslmode=require"
+# Store connection URL (base64-encoded). Replace <YOUR_DB_URL> with your connection string:
+# Example format (REDACTED): postgresql://<user>:<password>@<host>:<port>/<database>?sslmode=require
+url = "<YOUR_DB_URL>"
 encoded = base64.b64encode(url.encode()).decode()
 w.secrets.put_secret(scope="weather-db", key="lakebase-url", string_value=encoded)
 ```
@@ -175,13 +176,7 @@ Response:
 }
 ```
 
-**Parameters:**
-- `query` (required): Natural language search query
-- `top_k` (optional): Number of results to return (default: 5, range: 1-20)
-
-**Note**: Run the embedding pipeline first to populate `weather_embeddings`
-
-## Embedding Pipeline
+### Embedding Pipeline
 
 After syncing weather data, run the embedding pipeline to enable semantic search:
 

@@ -12,9 +12,14 @@ from databricks.sdk import WorkspaceClient
 
 w = WorkspaceClient()
 
-LAKEBASE_URL = "postgresql://student:npg_1igvhNWJru9y@ep-super-flower-d86lslmj.database.us-east-2.cloud.databricks.com/databricks_postgres?sslmode=require"
 SCOPE = "weather-db"
 KEY = "lakebase-url"
+
+# IMPORTANT: Do NOT store real credentials in repository files.
+# The LAKEBASE_URL below is intentionally redacted. Use the setup_secrets.py
+# script or the Databricks UI to create the secret `weather-db/lakebase-url`.
+
+LAKEBASE_URL = "<REDACTED_LAKEBASE_URL>"  # Replace locally when running this notebook (do not commit)
 
 # Create secret scope
 try:
@@ -26,14 +31,18 @@ except Exception as e:
     else:
         print(f"✗ Error: {e}")
 
-# Store the connection URL
-encoded_url = base64.b64encode(LAKEBASE_URL.encode()).decode()
-try:
-    w.secrets.put_secret(scope=SCOPE, key=KEY, string_value=encoded_url)
-    print(f"✓ Stored secret: {SCOPE}/{KEY}")
-    print("\n✓ Setup complete!")
-except Exception as e:
-    print(f"✗ Error: {e}")
+# Store the connection URL only if you have set it locally in this notebook session
+if LAKEBASE_URL and LAKEBASE_URL.startswith("postgresql://"):
+    # Base64-encode and store the connection URL
+    encoded_url = base64.b64encode(LAKEBASE_URL.encode()).decode()
+    try:
+        w.secrets.put_secret(scope=SCOPE, key=KEY, string_value=encoded_url)
+        print(f"✓ Stored secret: {SCOPE}/{KEY}")
+        print("\n✓ Setup complete!")
+    except Exception as e:
+        print(f"✗ Error: {e}")
+else:
+    print("LAKEBASE_URL is not configured in this notebook. Run 'python setup_secrets.py' locally or set the LAKEBASE_URL variable interactively (do not commit credentials).")
 
 # COMMAND ----------
 
